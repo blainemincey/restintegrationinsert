@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Configures the Camel Context-->
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:camel="http://camel.apache.org/schema/spring"
+       xsi:schemaLocation="
+       http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://camel.apache.org/schema/spring http://camel.apache.org/schema/spring/camel-spring.xsd">
+
+  <bean id="messageProcessor" class="com.mycompany.restintegrationinsert.MessageProcessor"/>
+
+  <camelContext xmlns="http://camel.apache.org/schema/spring">
+    <route id="restintegrationinsertroute">
+        <description>read XML from the file system, marshal to JSON, set message headers,call REST WS</description>
+        <from uri="file:src/data?noop=true"/>
+        <log message="${body}" loggingLevel="INFO"/>
+        <marshal>
+            <xmljson elementName="" forceTopLevelObject="true"/>
+        </marshal>
+        <log message="${body}" loggingLevel="INFO"/>
+        <process ref="messageProcessor"/>
+        <log message="${body}" loggingLevel="INFO"/>
+        <to uri="http://localhost:8080/myrestservice/services/rest/CustomerManager/insertCustomer"/>
+        <log message="${body}" loggingLevel="INFO"/>
+    </route>
+</camelContext>
+
+</beans>
